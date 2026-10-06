@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Pet Feeding Station</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- Mobile sidebar backdrop (click to close) -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+        <div class="brand-icon" aria-hidden="true">🐾</div>
+
+        <div>
+            <h2>Smart Feeder</h2>
+            <span>AI Pet Care</span>
+        </div>
+    </div>
+
+    <nav aria-label="Main navigation">
+
+        <button type="button" class="nav-item active" data-page="dashboard" aria-current="page">
+            <span aria-hidden="true">▣</span>
+            Dashboard
+        </button>
+
+        <button type="button" class="nav-item" data-page="pets">
+            <span aria-hidden="true">🐾</span>
+            Pets
+        </button>
+
+        <button type="button" class="nav-item" data-page="schedule">
+            <span aria-hidden="true">🕐</span>
+            Feeding Schedule
+        </button>
+
+        <button type="button" class="nav-item" data-page="history">
+            <span aria-hidden="true">📋</span>
+            Feeding History
+        </button>
+
+        <button type="button" class="nav-item" data-page="manual">
+            <span aria-hidden="true">🎛</span>
+            Manual Control
+        </button>
+
+        <button type="button" class="nav-item" data-page="device">
+            <span aria-hidden="true">🔌</span>
+            Device Status
+        </button>
+
+        <button type="button" class="nav-item" data-page="settings">
+            <span aria-hidden="true">⚙</span>
+            Settings
+        </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <div class="mini-status">
+            <span class="status-dot" id="connectionDot" aria-hidden="true"></span>
+            <div>
+                <strong id="connectionLabel">Connecting…</strong>
+                <small>ESP32-CAM</small>
+            </div>
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN AREA ================= -->
+
+<div class="app">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <button type="button" class="menu-btn" id="menuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="sidebar">
+            ☰
+        </button>
+
+        <div>
+            <h1 id="pageTitle">Dashboard</h1>
+            <p id="pageSubtitle">
+                Monitor your smart pet feeding station
+            </p>
+        </div>
+
+        <div class="top-actions">
+
+            <button type="button" class="icon-btn" id="notificationBtn" aria-label="View notifications">
+                <span aria-hidden="true">🔔</span>
+                <span class="notification-badge" id="notificationBadge">0</span>
+            </button>
+
+            <div class="profile">
+                <div class="avatar" aria-hidden="true">👤</div>
+
+                <div>
+                    <strong>Pet Owner</strong>
+                    <small>Administrator</small>
+                </div>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- PAGE CONTENT -->
+
+    <main class="content">
+
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section class="page active" id="dashboard" tabindex="-1">
+
+            <div class="welcome">
+
+                <div>
+                    <span class="eyebrow">SMART PET CARE</span>
+
+                    <h2 id="greeting">
+                        Hello 👋
+                    </h2>
+
+                    <p>
+                        Here's what's happening with your pets today.
+                    </p>
+                </div>
+
+                <div class="system-pill">
+                    <span class="status-dot" id="systemPillDot" aria-hidden="true"></span>
+                    <span id="systemPillLabel">Connecting…</span>
+                </div>
+
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card cat-card">
+
+                    <div class="stat-icon" aria-hidden="true">
+                        🐱
+                    </div>
+
+                    <div>
+                        <span>Cat</span>
+
+                        <strong id="catCount">
+                            --
+                        </strong>
+
+                        <small>
+                            meals today
+                        </small>
+                    </div>
+
+                    <div class="stat-limit" id="catLimit">
+                        / 3
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card dog-card">
+
+                    <div class="stat-icon" aria-hidden="true">
+                        🐶
+                    </div>
+
+                    <div>
+                        <span>Dog</span>
+
+                        <strong id="dogCount">
+                            --
+                        </strong>
+
+                        <small>
+                            meals today
+                        </small>
+                    </div>
+
+                    <div class="stat-limit" id="dogLimit">
+                        / 3
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card bird-card">
+
+                    <div class="stat-icon" aria-hidden="true">
+                        🐦
+                    </div>
+
+                    <div>
+                        <span>Bird</span>
+
+                        <strong id="birdCount">
+                            --
+                        </strong>
+
+                        <small>
+                            meals today
+                        </small>
+                    </div>
+
+                    <div class="stat-limit" id="birdLimit">
+                        / 3
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card total-card">
+
+                    <div class="stat-icon" aria-hidden="true">
+                        🍽
+                    </div>
+
+                    <div>
+                        <span>Total Meals</span>
+
+                        <strong id="totalMeals">
+                            --
+                        </strong>
+
+                        <small>
+                            today
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DAILY COUNT RESET -->
+            <div class="panel daily-reset-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>Daily Feeding Counts</h3>
+                        <p>Reset Cat, Dog, and Bird feeding counts to 0.</p>
+                    </div>
+
+                    <button type="button"
+                            class="secondary-btn"
+                            id="resetDailyCountsBtn">
+                        Reset Daily Counts
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- TWO COLUMN -->
+
+            <div class="dashboard-grid">
+
+
+                <!-- LAST DETECTION -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Last Detection</h3>
+                            <p>Latest AI detection event</p>
+                        </div>
+
+                        <span class="live-label">
+                            ● LIVE
+                        </span>
+
+                    </div>
+
+
+                    <div class="detection" aria-live="polite">
+
+                        <div class="detection-icon" id="petIcon" aria-hidden="true">
+                            🐾
+                        </div>
+
+                        <div class="detection-info">
+
+                            <h2 id="lastPet">
+                                Waiting...
+                            </h2>
+
+                            <p id="lastTime">
+                                No detection yet
+                            </p>
+
+                            <span class="success-badge" id="lastStatus">
+                                Waiting for detection
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NEXT FEEDING -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Next Feeding</h3>
+                            <p>Upcoming scheduled meal</p>
+                        </div>
+
+                        <span class="clock-icon" aria-hidden="true">
+                            🕐
+                        </span>
+
+                    </div>
+
+                    <div class="next-feeding">
+
+                        <div class="big-time" id="nextTime">
+                            07:00 PM
+                        </div>
+
+                        <div class="next-pet">
+                            <span aria-hidden="true">🐶</span>
+                            <span id="nextPet">
+                                Dog
+                            </span>
+                        </div>
+
+                        <p>
+                            Automatic feeding slot
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TODAY'S ACTIVITY -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>Today's Feeding Activity</h3>
+                        <p>Overview of scheduled meals</p>
+                    </div>
+
+                    <button type="button" class="secondary-btn"
+                            data-page="history">
+                        View History →
+                    </button>
+
+                </div>
+
+                <div class="activity-list" id="activityList">
+
+                    <div class="empty-state">
+                        <div aria-hidden="true">🍽</div>
+                        <p>No feeding activity yet.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PETS ================= -->
+
+        <section class="page" id="pets" tabindex="-1">
+
+            <div class="page-heading">
+
+                <div>
+                    <span class="eyebrow">PET MANAGEMENT</span>
+                    <h2>Your Pets</h2>
+                    <p>
+                        Manage the pets connected to the feeding station.
+                    </p>
+                </div>
+
+                <button type="button" class="primary-btn" id="addPetBtn">
+                    + Add Pet
+                </button>
+
+            </div>
+
+
+            <div class="pet-grid">
+
+                <div class="pet-profile">
+
+                    <div class="pet-profile-icon cat-bg" aria-hidden="true">
+                        🐱
+                    </div>
+
+                    <h3>Cat</h3>
+
+                    <span class="pet-type">
+                        Feline
+                    </span>
+
+                    <div class="pet-details">
+
+                        <div>
+                            <span>Food Valve</span>
+                            <strong>Valve 1</strong>
+                        </div>
+
+                        <div>
+                            <span>Daily Limit</span>
+                            <strong>3 meals</strong>
+                        </div>
+
+                    </div>
+
+                    <button type="button" class="outline-btn">
+                        Manage Cat
+                    </button>
+
+                </div>
+
+
+                <div class="pet-profile">
+
+                    <div class="pet-profile-icon dog-bg" aria-hidden="true">
+                        🐶
+                    </div>
+
+                    <h3>Dog</h3>
+
+                    <span class="pet-type">
+                        Canine
+                    </span>
+
+                    <div class="pet-details">
+
+                        <div>
+                            <span>Food Valve</span>
+                            <strong>Valve 2</strong>
+                        </div>
+
+                        <div>
+                            <span>Daily Limit</span>
+                            <strong>3 meals</strong>
+                        </div>
+
+                    </div>
+
+                    <button type="button" class="outline-btn">
+                        Manage Dog
+                    </button>
+
+                </div>
+
+
+                <div class="pet-profile">
+
+                    <div class="pet-profile-icon bird-bg" aria-hidden="true">
+                        🐦
+                    </div>
+
+                    <h3>Bird</h3>
+
+                    <span class="pet-type">
+                        Avian
+                    </span>
+
+                    <div class="pet-details">
+
+                        <div>
+                            <span>Food Valve</span>
+                            <strong>Valve 3</strong>
+                        </div>
+
+                        <div>
+                            <span>Daily Limit</span>
+                            <strong>3 meals</strong>
+                        </div>
+
+                    </div>
+
+                    <button type="button" class="outline-btn">
+                        Manage Bird
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SCHEDULE ================= -->
+
+        <section class="page" id="schedule" tabindex="-1">
+
+            <div class="page-heading">
+
+                <div>
+                    <span class="eyebrow">AUTOMATION</span>
+
+                    <h2>Feeding Schedule</h2>
+
+                    <p>
+                        Configure when each pet can receive food.
+                    </p>
+                </div>
+
+                <button type="button" class="primary-btn" id="saveSchedule">
+                    Save Schedule
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="schedule-info">
+
+                    <div class="info-icon" aria-hidden="true">
+                        ℹ️
+                    </div>
+
+                    <div>
+                        <strong>
+                            Maximum 3 meals per pet per day
+                        </strong>
+
+                        <p>
+                            Food is dispensed only during the assigned
+                            time slots after AI verification.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table class="modern-table">
+
+                        <caption class="visually-hidden">Feeding schedule per pet</caption>
+
+                        <thead>
+
+                            <tr>
+                                <th scope="col">Pet</th>
+                                <th scope="col">Slot 1</th>
+                                <th scope="col">Slot 2</th>
+                                <th scope="col">Slot 3</th>
+                                <th scope="col">Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <th scope="row"><span aria-hidden="true">🐱</span> Cat</th>
+
+                                <td>
+                                    <label class="visually-hidden" for="catSlot1">Cat slot 1 time</label>
+                                    <input id="catSlot1" type="time"
+                                           value="08:30">
+                                </td>
+
+                                <td>
+                                    <label class="visually-hidden" for="catSlot2">Cat slot 2 time</label>
+                                    <input id="catSlot2" type="time"
+                                           value="13:30">
+                                </td>
+
+                                <td>
+                                    <label class="visually-hidden" for="catSlot3">Cat slot 3 time</label>
+                                    <input id="catSlot3" type="time"
+                                           value="19:30">
+                                </td>
+
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" checked aria-label="Enable Cat schedule">
+                                        <span></span>
+                                    </label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th scope="row"><span aria-hidden="true">🐶</span> Dog</th>
+
+                                <td>
+                                    <label class="visually-hidden" for="dogSlot1">Dog slot 1 time</label>
+                                    <input id="dogSlot1" type="time"
+                                           value="08:00">
+                                </td>
+
+                                <td>
+                                    <label class="visually-hidden" for="dogSlot2">Dog slot 2 time</label>
+                                    <input id="dogSlot2" type="time"
+                                           value="13:00">
+                                </td>
+
+                                <td>
+                                    <label class="visually-hidden" for="dogSlot3">Dog slot 3 time</label>
+                                    <input id="dogSlot3" type="time"
+                                           value="19:00">
+                                </td>
+
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" checked aria-label="Enable Dog schedule">
+                                        <span></span>
+                                    </label>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <th scope="row"><span aria-hidden="true">🐦</span> Bird</th>
+
+                                <td>
+                                    <label class="visually-hidden" for="birdSlot1">Bird slot 1 time</label>
+                                    <input id="birdSlot1" type="time"
+                                           value="09:00">
+                                </td>
+
+                                <td>
+                                    <label class="visually-hidden" for="birdSlot2">Bird slot 2 time</label>
+                                    <input id="birdSlot2" type="time"
+                                           value="14:00">
+                                </td>
+
+                                <td>
+                                    <label class="visually-hidden" for="birdSlot3">Bird slot 3 time</label>
+                                    <input id="birdSlot3" type="time"
+                                           value="20:00">
+                                </td>
+
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" checked aria-label="Enable Bird schedule">
+                                        <span></span>
+                                    </label>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= HISTORY ================= -->
+
+        <section class="page" id="history" tabindex="-1">
+
+            <div class="page-heading">
+
+                <div>
+                    <span class="eyebrow">RECORDS</span>
+
+                    <h2>Feeding History</h2>
+
+                    <p>
+                        Complete record of feeding events.
+                    </p>
+                </div>
+
+                <button type="button" class="secondary-btn">
+                    Export Report
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="filters" role="group" aria-label="Filter feeding history">
+
+                    <button type="button" class="filter active" aria-pressed="true">
+                        Today
+                    </button>
+
+                    <button type="button" class="filter" aria-pressed="false">
+                        Yesterday
+                    </button>
+
+                    <button type="button" class="filter" aria-pressed="false">
+                        This Week
+                    </button>
+
+                    <button type="button" class="filter" aria-pressed="false">
+                        All Records
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table class="modern-table">
+
+                        <caption class="visually-hidden">Feeding history records</caption>
+
+                        <thead>
+
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">Pet</th>
+                                <th scope="col">Detection</th>
+                                <th scope="col">Food</th>
+                                <th scope="col">Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="historyTable">
+
+                            <tr>
+                                <td colspan="6">
+
+                                    <div class="empty-state">
+                                        <div aria-hidden="true">📋</div>
+                                        <p>
+                                            No feeding records yet.
+                                        </p>
+                                    </div>
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= MANUAL CONTROL ================= -->
+
+        <section class="page" id="manual" tabindex="-1">
+
+            <div class="page-heading">
+
+                <div>
+                    <span class="eyebrow">MANUAL CONTROL</span>
+
+                    <h2>Manual Feeding</h2>
+
+                    <p>
+                        Send a manual feeding command to the station.
+                    </p>
+                </div>
+
+                <span class="warning-label">
+                    ⚠ Use carefully
+                </span>
+
+            </div>
+
+
+            <div class="manual-warning" role="note">
+
+                <strong>Manual feeding bypasses the normal schedule.</strong>
+
+                <p>
+                    The system will still record the event.
+                    Use this function only when necessary.
+                </p>
+
+            </div>
+
+
+            <div class="manual-grid">
+
+                <div class="manual-card">
+
+                    <div class="manual-icon cat-bg" aria-hidden="true">
+                        🐱
+                    </div>
+
+                    <h3>Cat Food</h3>
+
+                    <p>
+                        Dispense food through Valve 1.
+                    </p>
+
+                    <button type="button" class="primary-btn feed-btn"
+                            data-pet="Cat">
+                        <span class="btn-label">Dispense Cat Food</span>
+                    </button>
+
+                </div>
+
+
+                <div class="manual-card">
+
+                    <div class="manual-icon dog-bg" aria-hidden="true">
+                        🐶
+                    </div>
+
+                    <h3>Dog Food</h3>
+
+                    <p>
+                        Dispense food through Valve 2.
+                    </p>
+
+                    <button type="button" class="primary-btn feed-btn"
+                            data-pet="Dog">
+                        <span class="btn-label">Dispense Dog Food</span>
+                    </button>
+
+                </div>
+
+
+                <div class="manual-card">
+
+                    <div class="manual-icon bird-bg" aria-hidden="true">
+                        🐦
+                    </div>
+
+                    <h3>Bird Food</h3>
+
+                    <p>
+                        Dispense food through Valve 3.
+                    </p>
+
+                    <button type="button" class="primary-btn feed-btn"
+                            data-pet="Bird">
+                        <span class="btn-label">Dispense Bird Food</span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= DEVICE ================= -->
+
+        <section class="page" id="device" tabindex="-1">
+
+            <div class="page-heading">
+
+                <div>
+                    <span class="eyebrow">SYSTEM MONITORING</span>
+
+                    <h2>Device Status</h2>
+
+                    <p>
+                        Monitor the health of your feeding station.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="device-grid">
+
+                <div class="device-card">
+
+                    <div class="device-icon" aria-hidden="true">
+                        📷
+                    </div>
+
+                    <div>
+                        <span>ESP32-CAM</span>
+                        <strong class="online-text">
+                            ONLINE
+                        </strong>
+                    </div>
+
+                    <small>
+                        Last connection: Just now
+                    </small>
+
+                </div>
+
+
+                <div class="device-card">
+
+                    <div class="device-icon" aria-hidden="true">
+                        📡
+                    </div>
+
+                    <div>
+                        <span>Wi-Fi</span>
+                        <strong class="online-text" id="wifiStatusText">
+                            CONNECTED
+                        </strong>
+                    </div>
+
+                    <small>
+                        Signal: Good
+                    </small>
+
+                </div>
+
+
+                <div class="device-card">
+
+                    <div class="device-icon" aria-hidden="true">
+                        👋
+                    </div>
+
+                    <div>
+                        <span>PIR Sensor</span>
+                        <strong class="online-text">
+                            READY
+                        </strong>
+                    </div>
+
+                    <small>
+                        Waiting for motion
+                    </small>
+
+                </div>
+
+
+                <div class="device-card">
+
+                    <div class="device-icon" aria-hidden="true">
+                        ⚙️
+                    </div>
+
+                    <div>
+                        <span>Feeding System</span>
+                        <strong class="online-text">
+                            READY
+                        </strong>
+                    </div>
+
+                    <small>
+                        3 valves configured
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel system-health">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>System Health</h3>
+                        <p>Current prototype status</p>
+                    </div>
+
+                    <span class="health-score">
+                        Good
+                    </span>
+
+                </div>
+
+
+                <div class="health-bars">
+
+                    <div>
+                        <span>ESP32-CAM</span>
+                        <div class="progress">
+                            <span style="width: 100%"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span>Wi-Fi</span>
+                        <div class="progress">
+                            <span style="width: 95%"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span>Feeding Mechanism</span>
+                        <div class="progress">
+                            <span style="width: 100%"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SETTINGS ================= -->
+
+        <section class="page" id="settings" tabindex="-1">
+
+            <div class="page-heading">
+
+                <div>
+                    <span class="eyebrow">CONFIGURATION</span>
+
+                    <h2>Settings</h2>
+
+                    <p>
+                        Configure your smart feeding station.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+                <div class="panel">
+
+                    <h3>Feeding Limits</h3>
+
+                    <p class="panel-description">
+                        Maximum number of automatic meals per pet.
+                    </p>
+
+                    <label class="setting-row">
+                        <span>Dog</span>
+                        <input type="number"
+                               value="3"
+                               min="1"
+                               max="5"
+                               aria-label="Dog daily feeding limit">
+                    </label>
+
+                    <label class="setting-row">
+                        <span>Cat</span>
+                        <input type="number"
+                               value="3"
+                               min="1"
+                               max="5"
+                               aria-label="Cat daily feeding limit">
+                    </label>
+
+                    <label class="setting-row">
+                        <span>Bird</span>
+                        <input type="number"
+                               value="3"
+                               min="1"
+                               max="5"
+                               aria-label="Bird daily feeding limit">
+                    </label>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h3>Notifications</h3>
+
+                    <p class="panel-description">
+                        Choose which alerts the owner receives.
+                    </p>
+
+                    <label class="setting-row">
+                        <span>Food Dispensed</span>
+
+                        <label class="switch">
+                            <input type="checkbox" checked aria-label="Toggle food dispensed notifications">
+                            <span></span>
+                        </label>
+                    </label>
+
+                    <label class="setting-row">
+                        <span>Pet Detected</span>
+
+                        <label class="switch">
+                            <input type="checkbox" aria-label="Toggle pet detected notifications">
+                            <span></span>
+                        </label>
+                    </label>
+
+                    <label class="setting-row">
+                        <span>System Offline</span>
+
+                        <label class="switch">
+                            <input type="checkbox" checked aria-label="Toggle system offline notifications">
+                            <span></span>
+                        </label>
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- TOAST -->
+
+    <div class="toast" id="toast" role="alert" aria-live="assertive">
+
+        <div class="toast-icon" id="toastIcon">
+            ✓
+        </div>
+
+        <div>
+            <strong id="toastTitle">
+                Success
+            </strong>
+
+            <p id="toastMessage">
+                Operation completed.
+            </p>
+        </div>
+
+    </div>
+
+
+    <footer>
+        Smart Pet Feeding Station • AI + IoT Prototype • 2026
+    </footer>
+
+
+    <script type="module" src="script.js"></script>
+
+</div>
+
+</body>
+</html>
